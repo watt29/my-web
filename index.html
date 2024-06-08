@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>การหารเศษส่วน</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            font-size: 1.5em;
+        }
+        .fraction-input {
+            margin-bottom: 20px;
+        }
+        .fraction-input input, .answer-input input {
+            width: 80px;
+            height: 40px;
+            text-align: center;
+            font-size: 1.5em;
+        }
+        .fraction {
+            display: inline-block;
+            text-align: center;
+        }
+        .fraction input {
+            display: block;
+        }
+        .result, .problem {
+            margin-top: 20px;
+        }
+        button {
+            margin-top: 10px;
+            padding: 10px 20px;
+            font-size: 1.2em;
+        }
+    </style>
+</head>
+<body>
+    <h1>การหารเศษส่วน</h1>
+    <div class="problem" id="problem"></div>
+    <div class="fraction-input">
+        <div class="fraction">
+            <input type="number" id="numerator1" placeholder="เศษ" readonly>
+            <input type="number" id="denominator1" placeholder="ส่วน" readonly>
+        </div>
+        <span>&divide;</span>
+        <div class="fraction">
+            <input type="number" id="numerator2" placeholder="เศษ" readonly>
+            <input type="number" id="denominator2" placeholder="ส่วน" readonly>
+        </div>
+    </div>
+    <button onclick="generateProblem()">สร้างปัญหา</button>
+    <div class="answer-input">
+        <input type="number" id="userNumerator" placeholder="เศษคำตอบ" required>
+        <span>/</span>
+        <input type="number" id="userDenominator" placeholder="ส่วนคำตอบ" required>
+    </div>
+    <button onclick="checkAnswer()">ตรวจสอบคำตอบ</button>
+    <div class="result" id="result"></div>
+
+    <script>
+        function gcd(a, b) {
+            while (b != 0) {
+                let temp = b;
+                b = a % b;
+                a = temp;
+            }
+            return a;
+        }
+
+        function simplifyFraction(numerator, denominator) {
+            const greatestCommonDivisor = gcd(numerator, denominator);
+            return [numerator / greatestCommonDivisor, denominator / greatestCommonDivisor];
+        }
+
+        function divideFractions() {
+            const numerator1 = document.getElementById('numerator1').value;
+            const denominator1 = document.getElementById('denominator1').value;
+            const numerator2 = document.getElementById('numerator2').value;
+            const denominator2 = document.getElementById('denominator2').value;
+
+            if (numerator1 && denominator1 && numerator2 && denominator2) {
+                const num1 = parseInt(numerator1);
+                const denom1 = parseInt(denominator1);
+                const num2 = parseInt(numerator2);
+                const denom2 = parseInt(denominator2);
+
+                // การหารเศษส่วนเท่ากับการคูณเศษส่วนแรกด้วยส่วนกลับของเศษส่วนที่สอง
+                const resultNumerator = num1 * denom2;
+                const resultDenominator = denom1 * num2;
+
+                return simplifyFraction(resultNumerator, resultDenominator);
+            } else {
+                alert('กรุณากรอกค่าให้ครบทุกช่อง');
+                return null;
+            }
+        }
+
+        function generateProblem() {
+            // Generate random numerators and denominators with two digits
+            const numerator1 = Math.floor(Math.random() * 90) + 10;
+            const denominator1 = Math.floor(Math.random() * 90) + 10;
+            const numerator2 = Math.floor(Math.random() * 90) + 10;
+            const denominator2 = Math.floor(Math.random() * 90) + 10;
+
+            // Set the input values
+            document.getElementById('numerator1').value = numerator1;
+            document.getElementById('denominator1').value = denominator1;
+            document.getElementById('numerator2').value = numerator2;
+            document.getElementById('denominator2').value = denominator2;
+
+            // Display the problem
+            document.getElementById('problem').innerText = `แก้โจทย์: (${numerator1}/${denominator1}) ÷ (${numerator2}/${denominator2})`;
+            document.getElementById('result').innerText = ''; // Clear previous result
+        }
+
+        function checkAnswer() {
+            const userNumerator = document.getElementById('userNumerator').value;
+            const userDenominator = document.getElementById('userDenominator').value;
+
+            if (userNumerator && userDenominator) {
+                const [correctNumerator, correctDenominator] = divideFractions();
+
+                if (correctNumerator && correctDenominator) {
+                    const [simplifiedNumerator, simplifiedDenominator] = simplifyFraction(parseInt(userNumerator), parseInt(userDenominator));
+
+                    if (simplifiedNumerator == correctNumerator && simplifiedDenominator == correctDenominator) {
+                        document.getElementById('result').innerText = 'คำตอบถูกต้อง!';
+                    } else {
+                        document.getElementById('result').innerText = `คำตอบผิด! คำตอบที่ถูกต้องคือ ${correctNumerator}/${correctDenominator}`;
+                    }
+                }
+            } else {
+                alert('กรุณากรอกคำตอบของคุณ');
+            }
+        }
+
+        // Generate a problem when the page loads
+        window.onload = generateProblem;
+    </script>
+</body>
+</html>
