@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>คำถามการคูณสุ่ม</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+        }
+        .question-container {
+            margin: 40px;
+        }
+        .question {
+            font-size: 40px;
+            font-weight: bold;
+        }
+        .answer-input {
+            width: 150px;
+            padding: 20px;
+            font-size: 18px;
+        }
+        .score {
+            font-size: 18px;
+        }
+    </style>
+</head>
+<body>
+    <h1>คำถามการคูณสุ่ม</h1>
+    <div class="question-container">
+        <span class="question" id="question"></span>
+        <input type="text" class="answer-input" id="answer" onkeyup="checkAnswer(event)" />
+        <p class="score">คะแนน: <span id="score">0</span></p>
+    </div>
+    <p id="result"></p>
+    <script>
+        let score = 0;
+        generateQuestion();
+
+        // ฟังก์ชันสร้างคำถามการคูณสุ่ม
+        function generateRandomMultiplicationQuestion() {
+            const num1 = Math.floor(Math.random() * 900) + 100; // ตัวตั้ง 2-3 หลัก
+            const num2 = Math.floor(Math.random() * 90) + 10; // ตัวคูณ 2 หลัก
+            const answer = num1 * num2;
+            return {
+                question: `${num1} x ${num2} = `,
+                answer: answer,
+            };
+        }
+
+        // สร้างคำถามใหม่และล้างคำตอบ
+        function generateQuestion() {
+            const question = generateRandomMultiplicationQuestion();
+            document.getElementById('question').textContent = question.question;
+            document.getElementById('answer').value = '';
+            currentAnswer = question.answer;
+        }
+
+        // ฟังก์ชันตรวจสอบคำตอบ
+        function checkAnswer(event) {
+            if (event.key === 'Enter') {
+                const userAnswer = parseInt(document.getElementById('answer').value, 10);
+                const resultElement = document.getElementById('result');
+                const scoreElement = document.getElementById('score');
+
+                if (userAnswer === currentAnswer) {
+                    resultElement.textContent = 'คำตอบถูกต้อง!';
+                    resultElement.style.color = 'green';
+                    score++;
+                    scoreElement.textContent = score;
+                    generateQuestion();
+                } else {
+                    resultElement.textContent = 'คำตอบไม่ถูกต้อง';
+                    resultElement.style.color = 'red';
+                }
+            }
+        }
+    </script>
+</body>
+</html>
